@@ -1,9 +1,9 @@
 //为每个操作都创建一个新的实例对象
-var $=function(){
-	return new Base();
+var $=function(args){
+	return new Base(args);
 }
 // 基础Base对象
-function Base(){
+function Base(args){
 	this.elements=[];//存放返回元素的数组
 	//id获取
 	this.getId=function(id){
@@ -35,6 +35,25 @@ function Base(){
 		this.elements[0]=element;
 		return this;
 	}
+	//类CSS选择器的$()
+	if(typeof args=='string'){
+		switch(args.charAt(0)){
+			case '#':
+				this.getId(args.substring(1));
+			break;
+			case '.':
+				this.getClassName(args.substring(1));
+			break;
+			default:
+				this.getTagName(args);
+		}
+
+	}else if(typeof args=='object'){
+		if(args!=undefined){
+			this.elements[0]=args;
+		}
+	}
+
 }
 //继承Base对象原型，并添加方法
 //css方法
