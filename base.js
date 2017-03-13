@@ -50,7 +50,7 @@ function Base(args){
 
 	}else if(typeof args=='object'){
 		if(args!=undefined){
-			this.elements[0]=args;
+			this.elements.push(args);
 		}
 	}
 
@@ -124,7 +124,7 @@ Base.prototype.show=function(){
 //hide
 Base.prototype.hide=function(){
 	for(var i=0;i<this.elements.length;i++){
-		this.elements.style.display='none';
+		this.elements[i].style.display='none';
 	}
 	return this;
 }
@@ -132,7 +132,7 @@ Base.prototype.hide=function(){
 Base.prototype.center=function(){
 	for(var i=0;i<this.elements.length;i++){
 		var eWidth=this.elements[i].offsetWidth;//元素的宽度
-		var eHeight=this.elements[i].height;//元素的高度
+		var eHeight=this.elements[i].offsetHeight;//元素的高度
 		var left=(document.documentElement.clientWidth-eWidth)/2;
 		var top=(document.documentElement.clientHeight-eHeight)/2;
 		this.elements[i].style.top=top+'px';
@@ -145,3 +145,55 @@ Base.prototype.resize=function(fn){
 	window.onresize=fn;
 	return this;
 }
+// 元素拖动
+Base.prototype.drag=function(){
+ 	for(var i=0;i<this.elements.length;i++){
+ 		this.elements[i].onmousedown=function(e){
+ 			var e=e||window.event;//IE兼容
+			var that=this;
+			var disX=e.clientX-that.offsetLeft;//鼠标距离拖动元素左侧的位置
+			var disY=e.clientY-that.offsetTop;//鼠标距离拖动元素上方的位置
+			document.onmousemove=function(e){
+				var left=e.clientX-disX;
+				var top=e.clientY-disY;	
+				//无法拖拽出屏幕
+				if(left<0){
+					that.style.left=0;
+				}else if(left>document.documentElement.clientWidth-that.offsetWidth){
+					that.style.left=document.documentElement.clientWidth-that.offsetWidth;
+				}else{
+					that.style.left=left+'px';
+				}
+				if(top<0){
+					that.style.top=0;
+				}else if(top>document.documentElement.clientHeight-that.offsetHeight){
+					that.style.top=document.documentElement.clientHeight-that.offsetHeight;
+				}else{
+					that.style.top=top+'px';
+				}
+				document.onmouseup=function(){					
+					this.onmousemove=null;
+					this.onmousedown=null;
+				}
+			}
+			return false;
+ 		}
+ 	}
+ 	return this
+ }
+				
+// 				// if(elemLeft<0){
+// 				// 	elemLeft=0;
+// 				// }else if(elemLeft>document.documentElement.clientWidth-that.offsetWidth){
+// 				// 	elemLeft=document.documentElement.clientWidth-that.offsetWidth;
+// 				// }
+// 				// if(elemTop<0){
+// 				// 	elemTop=0;
+// 				// }else if(elemTop>document.documentElement.clientHeight-that.offsetHeight){
+// 				// 	elemTop=document.documentElement.clientHeight-that.offsetHeight;
+// 				// }
+// 			}
+// 			document.onmouseup=function(){
+// 				this.onmousemove=null;
+// 				this.onmousedown=null;
+// 			}
